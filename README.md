@@ -27,11 +27,11 @@ BurpBountyPlus ÊÇÔÚBurpBountyµÄ»ù´¡Ìí¼ÓÁËÓÒ¼ü²Ëµ¥¹¦ÄÜ£¬Ìí¼ÓÖ§³ÖÁË¶Ôµ¥¸öÊý¾Ý°üµ¥¸
 
 ÔÚÔÄ¶ÁÁËËûµÄÔ´ÂëÖ®ºó£¬ÎÒ·¢ÏÖËûµÄºËÐÄ¹¦ÄÜÕýÊÇÎÒËùÐèÒªµÄ£¬ËùÒÔÎÒ¸ÄÔìµÄÕâ¿î²å¼þ¾ÍÊÇ¶ÔBurpBounty ºËÐÄ¹¦ÄÜµÄ×é×°£¬Â©¶´É¨ÃèÄ£¿éºöÂÔÐ¡µÄ¸Ä¶¯»ù±¾ÊÇÍêÈ«¸´ÖÆ£¬Ö÷ÒªÌí¼ÓÁËÒ»ÏÂ¹¦ÄÜÌØÉ«£º
 
-**1)**Ìí¼ÓÁËfuzzer¹¦ÄÜ
+1£© Ìí¼ÓÁËfuzzer¹¦ÄÜ
 
-**2£©**Ìí¼ÓÁËÂ©¶´É¨Ãè¹ý³ÌÏÔÊ¾´°¿Úlogger²¢¶Ô·¢ÏÖµÄÂ©¶´Ïî½øÐÐ¸ßÁÁÏÔÊ¾
+2£©Ìí¼ÓÁËÂ©¶´É¨Ãè¹ý³ÌÏÔÊ¾´°¿Úlogger²¢¶Ô·¢ÏÖµÄÂ©¶´Ïî½øÐÐ¸ßÁÁÏÔÊ¾
 
-**3£©**Ìí¼ÓÁËºöÂÔ²ÎÊýÉèÖÃºÍÊÖ¶¯Stop
+3£©Ìí¼ÓÁËºöÂÔ²ÎÊýÉèÖÃºÍÊÖ¶¯Stop
 
 # ÊÖ²á£º
 
