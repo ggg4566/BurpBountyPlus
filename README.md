@@ -23,9 +23,9 @@ BurpBountyPlus ÊÇÔÚBurpBountyµÄ»ù´¡Ìí¼ÓÁËÓÒ¼ü²Ëµ¥¹¦ÄÜ£¬Ìí¼ÓÖ§³ÖÁË¶Ôµ¥¸öÊý¾Ý°üµ¥¸
 
 # Òý×Ó£º
 
-ÉøÍ¸²âÊÔÒ»°ãÇé¿öÏÂÈç¹ûÄ¿±êÃ»ÓÐwafµÄÇé¿öÎÒÃÇ»áÊ¹ÓÃÖ÷¶¯É¨ÃèÆ÷ºÍ±»¶¯É¨ÃèÆ÷¶ÔÄ¿±ê½øÐÐÉ¨Ãè²âÊÔ£¬µ«ÊÇÓÐÊ±ºîÔÚÓÐwafÀ¹½Ø»òÉ¨ÃèÆ÷ÎÞ¹ûµÄÇé¿öÏÂÎÒÃÇ¾ÍÐèÒªÆ¾½èÎÒÃÇµÄ¾­ÑéºÍÀûÓÃÊÕ¼¯µÄpayloadÖØ·ÅÊý¾Ý°üÎÄ½øÐÐÊÖ¶¯²âÊÔÁË£¬²âÊÔµÄÊ±ºòÎÒÃÇÒ»°ãÊÇ·¢ËÍµ½Intruder ÅäÖÃ×Ô¶¨Òå×Öµä½øÐÐ²âÊÔ·ÖÎö½á¹û£¬µ«ÊÇÃ¿¸ö²ÎÈü¶¼ÕâÑù×öÄÑµÀ²»¾õµÃÂé·³Âð£¿ÓÐÃ»ÓÐÒ»¿î²å¼þ¿ÉÒÔµ¥¶À¶ÔÒ»¸öÊý¾Ý°üÀïÃæµÄ²ÎÊýµ¥¶À½øÐÐÉèÖÃ×Öµä²âÊÔÄØ£¿ÎÒ×ÉÑ¯ÁËºÜ¶àÈË±§Ç¸Ã»ÓÐÕÒµ½ÕâÑùÒ»¿î²å¼þ£¬µ«ÊÇÎÒ·¢ÏÖBurpBountyÊÇÒ»¿î²»´íµÄ²å¼þ£¬¹«¿ªÃâ·Ñ°æ±¾½ö½öÊµÏÖÀ©Õ¹ÁËÖ÷¶¯É¨ÃèºÍ±»¶¯É¨Ãè£¬ÊÔÓÃÖ®ºóÈÏÎªËûµÄ×î´óÁÁµã¾ÍÊÇ°Ñ¶ÔÃ¿¸öÂ©¶´µÄ¼ì²â·½Ê½¡¢¼ì²âpayload¡¢Â©¶´¶¨ÒåµÈÂ©¶´Ïà¹ØÐÅÏ¢ÅäÖÃÎÄµµ»¯£¬ÕâÊÇ¸ö²»´íÊµÏÖË¼Â·£¬¶ÔÓÚÒ»ÖÖÐÂÐÍÂ©¶´µÄ¼ì²â£¬Ö»ÐèÒª¶¨Òå¼ì²â·½Ê½ºÍ¼ì²âpayloadÉú³É¼ì²âÎÄ¼þ¼´¿É¡£
+ÉøÍ¸²âÊÔÒ»°ãÇé¿öÏÂÈç¹ûÄ¿±êÃ»ÓÐwafÎÒÃÇ»áÊ¹ÓÃÖ÷¶¯É¨ÃèÆ÷ºÍ±»¶¯É¨ÃèÆ÷¶ÔÄ¿±ê½øÐÐÉ¨Ãè²âÊÔ£¬µ«ÊÇÓÐÊ±ºîÔÚÓÐwafÀ¹½Ø»òÉ¨ÃèÆ÷ÎÞ¹ûµÄÇé¿öÏÂÎÒÃÇ¾ÍÐèÒªÆ¾½èÎÒÃÇµÄ¾­ÑéºÍÀûÓÃÊÕ¼¯µÄpayloadÖØ·ÅÊý¾Ý°ü½øÐÐÊÖ¶¯²âÊÔÁË£¬²âÊÔµÄÊ±ºòÒ»°ãÊÇ·¢ËÍµ½Intruder ÅäÖÃ×Ô¶¨Òå×Öµä½øÐÐ²âÊÔ·ÖÎö½á¹û£¬µ«ÊÇÃ¿¸ö²ÎÊ÷¶¼ÕâÑù×öÄÑµÀ²»¾õµÃ·±ËöÂð£¿ÓÐÃ»ÓÐÒ»¿î²å¼þ¿ÉÒÔµ¥¶À¶ÔÒ»¸öÊý¾Ý°üÀïÃæµÄ²ÎÊýµ¥¶À½øÐÐÉèÖÃ×Öµä²âÊÔÄØ£¿ÎÒ×ÉÑ¯ÁËºÜ¶àÈË±§Ç¸Ã»ÓÐÕÒµ½ÕâÑùÒ»¿î²å¼þ£¬µ«ÊÇÎÒ·¢ÏÖBurpBountyÊÇÒ»¿î²»´íµÄ²å¼þ£¬¹«¿ªÃâ·Ñ°æ±¾½ö½öÊµÏÖÀ©Õ¹ÁËBurpµÄÖ÷¶¯É¨ÃèºÍ±»¶¯É¨Ãè£¬ÊÔÓÃÖ®ºóÈÏÎªËûµÄ×î´óÁÁµã¾ÍÊÇ°Ñ¶ÔÃ¿¸öÂ©¶´µÄ¼ì²â·½Ê½¡¢¼ì²âpayload¡¢Â©¶´¶¨ÒåµÈÂ©¶´Ïà¹ØÐÅÏ¢ÅäÖÃÎÄµµ»¯£¬¶ÔÓÚ±àÐ´Â©¶´¼ì²â¹¤¾ßÀ´ËµÕâÊÇ¸ö²»´íÊµÏÖË¼Â·£¬Èç¹ûÐÂ³öÏÖÒ»ÖÖÐÂÐÍÂ©¶´£¬ÎÒÃÇÒªÊµÏÖ¶ÔËüµÄ¼ì²âÖ»ÐèÒª¶¨Òå¼ì²â·½Ê½ºÍ¼ì²âpayloadÈ»ºóÉú³É¼ì²âÎÄ¼þ¼´¿É¡£
 
-ÔÚÔÄ¶ÁÁËËûµÄÔ´ÂëÖ®ºó£¬ÎÒ·¢ÏÖËûµÄºËÐÄ¹¦ÄÜÕýÊÇÎÒËùÐèÒªµÄ£¬ËùÒÔÎÒ¸ÄÔìµÄÕâ¿î²å¼þ¾ÍÊÇ¶ÔBurpBounty ºËÐÄ¹¦ÄÜµÄ×é×°£¬Â©¶´É¨ÃèÄ£¿éºöÂÔÐ¡µÄ¸Ä¶¯»ù±¾ÊÇÍêÈ«¸´ÖÆ£¬Ö÷ÒªÌí¼ÓÁËÒ»ÏÂ¹¦ÄÜÌØÉ«£º
+ÔÚÔÄ¶ÁÁËËûµÄÔ´ÂëÖ®ºó£¬·¢ÏÖËûµÄºËÐÄ¹¦ÄÜÕýÊÇÎÒËùÐèÒªµÄ£¬ËùÒÔ¸ÄÔìµÄÕâ¿î²å¼þ¾ÍÊÇ¶ÔBurpBounty ºËÐÄ¹¦ÄÜµÄ×é×°£¬Â©¶´É¨ÃèÄ£¿éºöÂÔÐ¡µÄ¸Ä¶¯»ù±¾ÊÇÍêÈ«¸´ÖÆ£¬Ö÷ÒªÌí¼ÓÁËÒÔÏÂ¹¦ÄÜÌØÉ«£º
 
 1£© Ìí¼ÓÁËfuzzer¹¦ÄÜ
 
@@ -46,16 +46,15 @@ https://github.com/SummerSec/BurpBountyProfiles
 ![image-20210630194324815](images/image-20210630194324815.png)
 
 
-
 2 ÐÞ¸Ä²âÊÔpayload¡¢²ÎÊýÀ´Ô´
 
 ![image-20210630194921344](images/image-20210630194921344.png)
 
 3. ÅäÖÃ¼ì²â·½Ê½
 
-   ![image-20210630195149023](images/image-20210630195149023.png)
+![image-20210630195149023](images/image-20210630195149023.png)
 
-   Ìí¼ÓºÃÂ©¶´¼ì²âÅäÖÃÎÄ¼þÖ®ºó¾Í¿ÉÒÔÊ¹ÓÃÁË£¬**Èç¹û²»Ìí¼ÓµÄÓÒ¼ü²¢²»»á³öÏÖ²âÊÔ²Ëµ¥**¡£
+   Ìí¼ÓºÃÂ©¶´¼ì²âÅäÖÃÎÄ¼þÖ®ºó¾Í¿ÉÒÔÊ¹ÓÃÁË£¬**Èç¹û²»Ìí¼ÓµÄ»°ÓÒ¼ü²¢²»»á³öÏÖ²âÊÔ²Ëµ¥**¡£
 
 # Õ¹Ê¾:
 
