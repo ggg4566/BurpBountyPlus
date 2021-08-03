@@ -23,9 +23,8 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.google.gson.reflect.TypeToken;
 import com.google.gson.stream.JsonReader;
-import java.awt.Desktop;
-import java.awt.Dimension;
-import java.awt.Toolkit;
+
+import java.awt.*;
 import java.awt.datatransfer.Clipboard;
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
@@ -43,11 +42,8 @@ import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.*;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 import javax.swing.*;
 import javax.swing.event.TableModelEvent;
 import javax.swing.event.TableModelListener;
@@ -164,7 +160,7 @@ public class BurpBountyGui extends javax.swing.JPanel {
             filename = System.getProperty("user.home");
             profiles_directory = filename + File.separator;
         }
-        
+
 
         model = new DefaultTableModel() {
 
@@ -229,6 +225,7 @@ public class BurpBountyGui extends javax.swing.JPanel {
         showTags();
         showProfiles("All");
     }
+
 
     public void setActiveAttackValues(String profiles, ActiveProfile profile) {
         //Set Attack values when select from main combobox
@@ -1865,6 +1862,7 @@ public class BurpBountyGui extends javax.swing.JPanel {
         showProfiles("All");
     }
 
+
     public void makeTagsFile() {
 
         Gson gson = new Gson();
@@ -1893,6 +1891,7 @@ public class BurpBountyGui extends javax.swing.JPanel {
                     Object idata = data.get(0);
                     ProfilesProperties profile_properties = gson.fromJson(idata.toString(), ProfilesProperties.class
                     );
+
                     if (profile_properties.getTags() != null) {
                         tags.addAll(profile_properties.getTags());
                     }

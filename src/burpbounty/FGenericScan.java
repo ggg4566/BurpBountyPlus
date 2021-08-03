@@ -31,6 +31,7 @@ public class FGenericScan {
 
     private IBurpExtenderCallbacks callbacks;
     private IExtensionHelpers helpers;
+    String profileName;
     String issuename;
     String issuedetail;
     String issuebackground;
@@ -144,6 +145,7 @@ public class FGenericScan {
             headers = profile_property.getHeader() != null ? profile_property.getHeader() : new ArrayList();
             variationAttributes = profile_property.getVariationAttributes() != null ? profile_property.getVariationAttributes() : new ArrayList();
             pathDiscovery = profile_property.getPathDiscover();
+            profileName = profile_property.getName();
             IScanIssue matches = null;
             GrepMatch gm = new GrepMatch(callbacks);
             //If encoders exist...
@@ -243,7 +245,7 @@ public class FGenericScan {
                     responseCode = new Integer(r.getStatusCode());
                     responseCodeBase = new Integer(rbase.getStatusCode());
                     String res_len = String.valueOf(requestResponse.getResponse().length-r.getBodyOffset());
-                    this.tagui.add(helpers.analyzeRequest(requestResponse).getUrl(), String.valueOf(responseCode),res_len,payload,ParamName, requestResponse);
+                    this.tagui.add(helpers.analyzeRequest(requestResponse).getUrl(), String.valueOf(responseCode),res_len,payload,ParamName,profileName, requestResponse);
 
                     if ((!isresponsecode || isresponsecode && isResponseCode(responsecode, negativerc, responseCode) && isResponseCode(responsecode, negativerc, responseCodeBase)) && (!iscontenttype || iscontenttype && isContentType(contenttype, negativect, r))) {
                         Integer time = Integer.parseInt(timeout);
@@ -291,7 +293,7 @@ public class FGenericScan {
                     r = helpers.analyzeResponse(requestResponse.getResponse());
                     responseCode = new Integer(r.getStatusCode());
                     String res_len = String.valueOf(requestResponse.getResponse().length-r.getBodyOffset());
-                    this.tagui.add(helpers.analyzeRequest(requestResponse).getUrl(), String.valueOf(responseCode),res_len,payload, ParamName,requestResponse);
+                    this.tagui.add(helpers.analyzeRequest(requestResponse).getUrl(), String.valueOf(responseCode),res_len,payload, ParamName,profileName,requestResponse);
                     IResponseVariations ipv = helpers.analyzeResponseVariations(baseRequestResponse.getResponse(), requestResponse.getResponse());
                     List<String> var;
 
@@ -358,7 +360,7 @@ public class FGenericScan {
                     responseCode = new Integer(r.getStatusCode());
                     responseCodeBase = new Integer(rbase.getStatusCode());
                     String res_len = String.valueOf(requestResponse.getResponse().length-r.getBodyOffset());
-                    this.tagui.add(helpers.analyzeRequest(requestResponse).getUrl(), String.valueOf(responseCode),res_len,payload,ParamName, requestResponse);
+                    this.tagui.add(helpers.analyzeRequest(requestResponse).getUrl(), String.valueOf(responseCode),res_len,payload,ParamName,profileName,requestResponse);
                     if ((!isresponsecode || isresponsecode && isResponseCode(responsecode, negativerc, responseCode) && isResponseCode(responsecode, negativerc, responseCodeBase)) && (!iscontenttype || iscontenttype && isContentType(contenttype, negativect, r))) {
                         int baseResponseContentLength = getContentLength(baseRequestResponse);
                         int currentResponseContentLength = getContentLength(requestResponse);
@@ -410,7 +412,7 @@ public class FGenericScan {
 
                         responseCode = new Integer(r.getStatusCode());
                         String res_len = String.valueOf(requestResponse.getResponse().length-r.getBodyOffset());
-                        this.tagui.add(helpers.analyzeRequest(requestResponse).getUrl(), String.valueOf(responseCode),res_len,payload,ParamName, requestResponse);
+                        this.tagui.add(helpers.analyzeRequest(requestResponse).getUrl(), String.valueOf(responseCode),res_len,payload,ParamName,profileName, requestResponse);
                         burpCollaboratorData.setIssueProperties(requestResponse, bchost, issuename, issuedetail.replace("<payload>", helpers.urlEncode(payload)), issueseverity, issueconfidence, remediationdetail.replace("<payload>", helpers.urlEncode(payload)), issuebackground.replace("<payload>", helpers.urlEncode(payload)), remediationbackground.replace("<payload>", helpers.urlEncode(payload)));
 
                         do {
@@ -432,7 +434,7 @@ public class FGenericScan {
                                     responseCode = new Integer(r.getStatusCode());
 
                                     res_len = String.valueOf(requestResponse.getResponse().length-r.getBodyOffset());
-                                    this.tagui.add(helpers.analyzeRequest(requestResponse).getUrl(), String.valueOf(responseCode),res_len,payload, ParamName,requestResponse);
+                                    this.tagui.add(helpers.analyzeRequest(requestResponse).getUrl(), String.valueOf(responseCode),res_len,payload, ParamName,profileName,requestResponse);
                                 }
                                 loop += 1;
                             } else {
@@ -478,7 +480,7 @@ public class FGenericScan {
 
                         responseCode = new Integer(r.getStatusCode());
                         String res_len = String.valueOf(requestResponse.getResponse().length-r.getBodyOffset());
-                        this.tagui.add(helpers.analyzeRequest(requestResponse).getUrl(), String.valueOf(responseCode),res_len,payload,ParamName, requestResponse);
+                        this.tagui.add(helpers.analyzeRequest(requestResponse).getUrl(), String.valueOf(responseCode),res_len,payload,ParamName,profileName, requestResponse);
                         if ((!isresponsecode || isresponsecode && isResponseCode(responsecode, negativerc, responseCode)) && (!iscontenttype || iscontenttype && isContentType(contenttype, negativect, r))) {
                             for (int x = 0; x < grep_index; x++) {
                                 if (!greps_final.get(x).isEmpty()) {
@@ -521,7 +523,7 @@ public class FGenericScan {
                                     res_len = String.valueOf(requestResponse.getResponse().length-r.getBodyOffset());
 
 
-                                    this.tagui.add(helpers.analyzeRequest(requestResponse).getUrl(), String.valueOf(responseCode), res_len,payload,ParamName,requestResponse);
+                                    this.tagui.add(helpers.analyzeRequest(requestResponse).getUrl(), String.valueOf(responseCode), res_len,payload,ParamName,profileName,requestResponse);
                                     if ((!isresponsecode || isresponsecode && isResponseCode(responsecode, negativerc, responseCode)) && (!iscontenttype || iscontenttype && isContentType(contenttype, negativect, r))) {
                                         for (int x = 0; x < grep_index; x++) {
                                             if (!greps_final.get(x).isEmpty()) {

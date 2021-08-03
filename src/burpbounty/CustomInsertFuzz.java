@@ -29,7 +29,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.ThreadPoolExecutor;
 
-public class Fuzzer{
+public class CustomInsertFuzz{
 
     private IBurpExtenderCallbacks callbacks;
     private IExtensionHelpers helpers;
@@ -81,11 +81,10 @@ public class Fuzzer{
     int startIndex;
     private ThreadPoolExecutor executor;
 
-    public Fuzzer(BurpBountyExtension bbe, IBurpExtenderCallbacks callbacks, CollaboratorData burpCollaboratorData, String filename, JsonArray allprofiles, Tags tagui,ThreadPoolExecutor threadpool) {
+    public CustomInsertFuzz(BurpBountyExtension bbe, IBurpExtenderCallbacks callbacks, String filename, JsonArray allprofiles, Tags tagui,ThreadPoolExecutor threadpool) {
 
         this.callbacks = callbacks;
         helpers = callbacks.getHelpers();
-        this.burpCollaboratorData = burpCollaboratorData;
         gson = new Gson();
         this.filename = filename;
         this.allprofiles = allprofiles;
@@ -97,7 +96,7 @@ public class Fuzzer{
         this.executor = threadpool;
     }
 
-    public List<IScanIssue> runAScan(IHttpRequestResponse baseRequestResponse, IScannerInsertionPoint insertionPoint, JsonArray activeprofiles, String bchost) {
+    public List<IScanIssue> runAScan(IHttpRequestResponse baseRequestResponse,JsonArray activeprofiles,byte[] request,int[] selectedIndex) {
 
         /*if (helpers.analyzeResponse(baseRequestResponse.getResponse()) == null | helpers.analyzeRequest(baseRequestResponse.getRequest()) == null) {
             return null;
@@ -107,17 +106,10 @@ public class Fuzzer{
         IHttpService httpService = baseRequestResponse.getHttpService();
         List<Integer> responseCodes = new ArrayList<>(Arrays.asList(300, 301, 303, 302, 307, 308));
         int limitredirect = 30;
-        String ParamName = insertionPoint.getInsertionPointName();
 
         for (int i = 0; i < activeprofiles.size(); i++) {
             Object idata = activeprofiles.get(i);
             profile_property = gson.fromJson(idata.toString(), ProfilesProperties.class);
-            insertionPointType = profile_property.getInsertionPointType() != null ? profile_property.getInsertionPointType() : new ArrayList(Arrays.asList(0));
-            Integer v= insertionPoint.getInsertionPointType()&0xff;
-            if(!insertionPointType.contains(v))
-            {
-                continue;
-            }
 
             payloads = profile_property.getPayloads();
             greps = profile_property.getGreps();
@@ -205,10 +197,6 @@ public class Fuzzer{
                     payload = encodeTheseURL(payload, charstourlencode);
                 }
 
-                if (payloadposition == 2) {
-                    String value = insertionPoint.getBaseValue();
-                    payload = value.concat(payload);
-                }
 
                 if (!headers.isEmpty()) {
                     for (int x = 0; x < headers.size(); x++) {
@@ -227,20 +215,30 @@ public class Fuzzer{
                 }
 
                 // do somethings
-                byte[] request = new BuildUnencodeRequest(helpers).buildUnencodedRequest(insertionPoint, helpers.stringToBytes(payload), headers, bchost);
+                String ParamName = "User Defined Point";
+
+                byte[] newRequest = do_modify_request(request,selectedIndex,payload);
                 try {
-                    this.executor.submit(new FuzzerThread(callbacks,tagui,request,baseRequestResponse,ParamName,payload,profileName));
+                    this.executor.submit(new FuzzerThread(callbacks,tagui,newRequest,baseRequestResponse,ParamName,payload,profileName));
                 }catch (Exception ex) {
                     callbacks.printError(ex.getMessage());
                     break;
                 }
-
             }
         }
 
         return issues;
     }
 
+
+    public byte[] do_modify_request(byte[] request, int[] selectedIndex, String modifiedString) {
+        byte[] modString = modifiedString.getBytes();
+        byte[] newRequest = new byte[((request.length + modifiedString.length()) - (selectedIndex[1] - selectedIndex[0]))];
+        System.arraycopy(request, 0, newRequest, 0, selectedIndex[0]);
+        System.arraycopy(modString, 0, newRequest, selectedIndex[0], modString.length);
+        System.arraycopy(request, selectedIndex[1], newRequest, selectedIndex[0] + modString.length, request.length - selectedIndex[1]);
+        return newRequest;
+    }
 
     public List<IScanIssue> runResPScan(IHttpRequestResponse baseRequestResponse, JsonArray passiveresprofiles, String bchost) throws Exception {
 
