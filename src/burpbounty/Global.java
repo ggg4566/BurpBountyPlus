@@ -3,10 +3,11 @@ package burpbounty;
 import com.google.gson.*;
 import com.google.gson.stream.JsonReader;
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 import java.util.List;
-import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 public class Global {
     public static Map<String, LightColor>  ProfileColors =  new HashMap<String,LightColor>();
@@ -29,7 +30,7 @@ public class Global {
         AllProfileColor.add(ColorNode);
 
         ColorNode = new ArrayList<>();
-        ColorNode.add(new Color(0xff,0xff,0xff));
+        ColorNode.add(new Color(0x00,0x00,0x00));
         ColorNode.add(new Color(0xBC,0xE3,0x4E));
         AllProfileColor.add(ColorNode);
 
@@ -108,7 +109,7 @@ public class Global {
         AllProfileColor.add(ColorNode);
 
         ColorNode = new ArrayList<>();
-        ColorNode.add(new Color(0xff,0xff,0xff));
+        ColorNode.add(new Color(0x00,0x00,0x00));
         ColorNode.add(new Color(0x86,0xBF,0x35));
         AllProfileColor.add(ColorNode);
         for (int i = 0; i < allprofiles.size(); i++) {
@@ -117,9 +118,11 @@ public class Global {
             ProfilesProperties issue = gson.fromJson(idata.toString(), ProfilesProperties.class);
             String name = issue.getName();
             List<String> greps = issue.getGreps();
+            int matchtype = issue.getMatchType();
             LightColor rowColor = new LightColor();
             rowColor.ProfileName = name;
             rowColor.greps = greps;
+            rowColor.matchtype = matchtype;
             if(i>AllProfileColor.size()-1)
             {
                 rowColor.RowColor = (List<Color>) AllProfileColor.get(0);
@@ -135,4 +138,5 @@ public class Global {
     {
         return Global.ProfileColors;
     }
+
 }

@@ -11,9 +11,13 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseAdapter;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.regex.PatternSyntaxException;
 
 
 import burp.*;
+
 
 public class Tags extends AbstractTableModel implements ITab, IMessageEditorController
 {
@@ -32,7 +36,9 @@ public class Tags extends AbstractTableModel implements ITab, IMessageEditorCont
     private JTabbedPane Rtable;
     public  List<String> payloads;
     private Map<String, LightColor>  ProfileColors;
-    private BurpBountyExtension bbe;
+    public BurpBountyExtension bbe;
+    private boolean IsLight;
+    private String filterText="";
 
     public Tags(final IBurpExtenderCallbacks callbacks, final String tagName, JTabbedPane panel) {
         this.callbacks = callbacks;
@@ -40,6 +46,7 @@ public class Tags extends AbstractTableModel implements ITab, IMessageEditorCont
         this.tagName = tagName;
         this.payloads = new ArrayList<>();
         ProfileColors =  new HashMap<String, LightColor>();
+        IsLight = true;
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -138,8 +145,51 @@ public class Tags extends AbstractTableModel implements ITab, IMessageEditorCont
         return ret;
     }
 
-    public void filerTable(String query)
+    public List getRowFiler()
     {
+        List<String> ret = new ArrayList();
+        try {
+            int RowLines = getRowCount();
+            for (int i = 0; i < RowLines; i++) {
+                final LogEntry logEntry =this.log.get(i);
+                if(logEntry.isIsssue == true)
+                {
+                    ret.add(logEntry.id);
+                }
+            }
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return ret;
+    }
+
+    public void filerTableColor()
+    {
+            TableRowSorter<TableModel> rowSorter = new TableRowSorter(Tags.this);
+            Tags.this.logTable.setRowSorter(rowSorter);
+            ArrayList<RowFilter<Object, Number>> response_filter_values = new ArrayList<RowFilter<Object, Number>>();
+            List<String> showRowIndex = getRowFiler();
+            if(!showRowIndex.isEmpty()) {
+                RowFilter<Object, Number> filter = new RowFilter<Object, Number>() {
+                    @Override
+                    public boolean include(RowFilter.Entry entry) {
+                        return showRowIndex.contains(entry.getValue(0));
+                    }
+                };
+                response_filter_values.add(filter);
+                rowSorter.setRowFilter(RowFilter.orFilter(response_filter_values));
+            }
+    }
+
+    public void setFilterText(String text)
+    {
+        this.filterText = text;
+    }
+
+    public void filerTable()
+    {
+        String query = this.filterText;
         TableRowSorter<TableModel> rowSorter = new TableRowSorter(Tags.this);
         Tags.this.logTable.setRowSorter(rowSorter);
         if(query.isEmpty())
@@ -197,10 +247,31 @@ public class Tags extends AbstractTableModel implements ITab, IMessageEditorCont
         this.payloads.clear();
     }
 
+    public  boolean RegexQuery(String query,String BodyString)
+    {
+        boolean ret= false;
+        Pattern p;
+        Matcher m;
+        try {
+            p = Pattern.compile(query, Pattern.CASE_INSENSITIVE);
+            m = p.matcher(BodyString);
+            if(m.find())
+            {
+                ret = true;
+            }
+        } catch (PatternSyntaxException pse) {
+            Tags.this.callbacks.printError("Grep Match line 216 Incorrect regex: " + pse.getPattern());
+        }
+        return ret;
+    }
+
+
+
     public void setRowColor()
     {
         JTable table = logTable;
         SwingUtilities.invokeLater(new Runnable() {
+
             @Override
             public void run() {
                 try {
@@ -209,31 +280,47 @@ public class Tags extends AbstractTableModel implements ITab, IMessageEditorCont
                         public Component getTableCellRendererComponent(JTable table,
                                                                        Object value, boolean isSelected, boolean hasFocus,
                                                                        int row, int column) {
-                            final LogEntry logEntry = Tags.this.log.get(Tags.this.logTable.convertRowIndexToModel(row));
+                            LogEntry logEntry = Tags.this.log.get(Tags.this.logTable.convertRowIndexToModel(row));
 
                             String ProfileName = logEntry.profileName;
                             LightColor ShowColor = GetProfileColor(ProfileName);
-                            if (!ShowColor.greps.isEmpty()) {
+                            int matchtype = ShowColor.matchtype;
+
+                            if (!ShowColor.greps.isEmpty()&&Integer.parseInt(logEntry.response_len)>0) {
                                 String responseText = new String(logEntry.requestResponse.getResponse());
                                 Boolean isFind = false;
                                 for (String query : ShowColor.greps) {
                                     String[] tokens = query.split(",", 3);
-                                    if (responseText.toUpperCase().contains(tokens[2].toUpperCase())) {
-                                        isFind = true;
-                                        break;
+                                    if(matchtype == 2) {// regex match
+                                        if(Tags.this.RegexQuery(tokens[2],responseText))
+                                        {
+                                            isFind = true;
+                                            logEntry.isIsssue =true;
+                                            break;
+
+                                        }
+                                    }else{// Simple String
+                                        if (responseText.toUpperCase().contains(tokens[2].toUpperCase())) {
+                                            isFind = true;
+                                            logEntry.isIsssue =true;
+                                            break;
+                                        }
                                     }
+
                                 }
+
+
                                 if (isFind) {
                                     setBackground(ShowColor.RowColor.get(1));
                                     setForeground(ShowColor.RowColor.get(0));
                                 } else {
-                                    setBackground(new Color(0, 102, 255));
-                                    setForeground(new Color(0xFF, 0xFF, 0xFF));
+                                    setBackground(new Color(0xFF, 0xFF, 0xFF));
+                                    setForeground(new Color(0, 0, 0));
                                 }
                             }else
                             {
-                                setBackground(new Color(0, 102, 255));
-                                setForeground(new Color(0xFF, 0xFF, 0xFF));
+                                setBackground(new Color(0xFF, 0xFF, 0xFF));
+                               setForeground(new Color(0,0,0));
                             }
                             return super.getTableCellRendererComponent(table, value,
                                     isSelected, hasFocus, row, column);
@@ -254,30 +341,84 @@ public class Tags extends AbstractTableModel implements ITab, IMessageEditorCont
     public  void setBackgroundColor(Color color)
     {
         JTable table = logTable;
-        try {
-            DefaultTableCellRenderer tcr = new DefaultTableCellRenderer() {
+//        try {
+//            DefaultTableCellRenderer tcr = new DefaultTableCellRenderer() {
+//
+//                public Component getTableCellRendererComponent(JTable table,
+//                                                               Object value, boolean isSelected, boolean hasFocus,
+//                                                               int row, int column) {
+//                    final LogEntry logEntry =Tags.this.log.get(Tags.this.logTable.convertRowIndexToModel(row));
+//                    if (payloads.contains(logEntry.payload)) {
+//                        setBackground(color);
+//                        setForeground(new Color(0xFF, 0xFF, 0xFF));
+//                    } else {
+//                        setBackground(new Color(0, 102, 255));
+//                        setForeground(new Color(0xFF, 0xFF, 0xFF));
+//                    }
+//                    return super.getTableCellRendererComponent(table, value,
+//                            isSelected, hasFocus, row, column);
+//                }
+//            };
+//            int columnCount = table.getColumnCount();
+//            for (int i = 0; i < columnCount; i++) {
+//                table.getColumn(table.getColumnName(i)).setCellRenderer(tcr);
+//            }
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//        }
+        if(IsLight ==true){
+            try {
+                DefaultTableCellRenderer tcr = new DefaultTableCellRenderer() {
 
-                public Component getTableCellRendererComponent(JTable table,
-                                                               Object value, boolean isSelected, boolean hasFocus,
-                                                               int row, int column) {
-                    final LogEntry logEntry =Tags.this.log.get(Tags.this.logTable.convertRowIndexToModel(row));
-                    if (payloads.contains(logEntry.payload)) {
-                        setBackground(color);
-                        setForeground(new Color(0xFF, 0xFF, 0xFF));
-                    } else {
-                        setBackground(new Color(0, 102, 255));
-                        setForeground(new Color(0xFF, 0xFF, 0xFF));
+                    public Component getTableCellRendererComponent(JTable table,
+                                                                   Object value, boolean isSelected, boolean hasFocus,
+                                                                   int row, int column) {
+                        final LogEntry logEntry = Tags.this.log.get(Tags.this.logTable.convertRowIndexToModel(row));
+
+                        String ProfileName = logEntry.profileName;
+                        LightColor ShowColor = GetProfileColor(ProfileName);
+                        int matchtype = ShowColor.matchtype;
+                        if (!ShowColor.greps.isEmpty()) {
+                            String responseText = new String(logEntry.requestResponse.getResponse());
+                            Boolean isFind = false;
+                            for (String query : ShowColor.greps) {
+                                String[] tokens = query.split(",", 3);
+                                if(matchtype == 2) {// regex match
+                                    isFind = Tags.this.RegexQuery(tokens[2],responseText);
+                                }else{// Simple String
+                                    if (responseText.toUpperCase().contains(tokens[2].toUpperCase())) {
+                                        isFind = true;
+                                        break;
+                                    }
+                                }
+
+                            }
+
+                            if (isFind) {
+                                setBackground(ShowColor.RowColor.get(1));
+                                setForeground(ShowColor.RowColor.get(0));
+                            } else {
+                                setBackground(new Color(0, 102, 255));
+                                setForeground(new Color(0xFF, 0xFF, 0xFF));
+                            }
+                        }else
+                        {
+                            setBackground(new Color(0, 102, 255));
+                            setForeground(new Color(0xFF, 0xFF, 0xFF));
+                        }
+                        return super.getTableCellRendererComponent(table, value,
+                                isSelected, hasFocus, row, column);
                     }
-                    return super.getTableCellRendererComponent(table, value,
-                            isSelected, hasFocus, row, column);
+                };
+                int columnCount = table.getColumnCount();
+                for (int i = 0; i < columnCount; i++) {
+                    table.getColumn(table.getColumnName(i)).setCellRenderer(tcr);
                 }
-            };
-            int columnCount = table.getColumnCount();
-            for (int i = 0; i < columnCount; i++) {
-                table.getColumn(table.getColumnName(i)).setCellRenderer(tcr);
+            } catch (
+                    Exception ex) {
+                ex.printStackTrace();
             }
-        } catch (Exception ex) {
-            ex.printStackTrace();
+            IsLight = false;
         }
     }
     public  void setOneRowBackgroundColor(int rowIndex,
@@ -432,7 +573,7 @@ public class Tags extends AbstractTableModel implements ITab, IMessageEditorCont
     public IHttpService getHttpService() {
         return this.currentlyDisplayedItem.getHttpService();
     }
-    public synchronized void addEntry(LogEntry logEntry) {
+    public void addEntry(LogEntry logEntry) {
         this.log.add(logEntry);
     }
     public int add(final URL url, final String status, final String response_len,final String payload, final String pointName,final String profileName,final IHttpRequestResponse requestResponse) {
@@ -440,15 +581,21 @@ public class Tags extends AbstractTableModel implements ITab, IMessageEditorCont
             final Date d = new Date();
             final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             final String startTime = sdf.format(d);
-            final int id = this.log.size();
-            addEntry(new LogEntry(String.valueOf(id),url, status,response_len,payload, pointName,profileName,requestResponse));
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
+                    final int id = log.size();
+                    addEntry(new LogEntry(String.valueOf(id),url, status,response_len,payload, pointName,profileName,requestResponse));
                     fireTableRowsInserted(id, id);
+                    if(filterText =="H"){
+                        filerTableColor();
+                    }else{
+                        filerTable();
+                    }
+
                 }
             });
-            return id;
+            return 0;
         }
     }
 
@@ -474,6 +621,7 @@ public class Tags extends AbstractTableModel implements ITab, IMessageEditorCont
         String payload="";
         String pointName;
         String profileName;
+        public boolean isIsssue;
         final IHttpRequestResponse requestResponse;
 
         LogEntry(final String id,final URL url, final String status,final String response_len,final String payload,  final String pointName, String profileName,final IHttpRequestResponse requestResponse) {
@@ -488,6 +636,7 @@ public class Tags extends AbstractTableModel implements ITab, IMessageEditorCont
             }
             this.pointName = pointName;
             this.requestResponse = requestResponse;
+            this.isIsssue = false;
         }
     }
 
@@ -503,7 +652,12 @@ public class Tags extends AbstractTableModel implements ITab, IMessageEditorCont
             ClearMenItem.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent evt) {
                     //do sime
-                clearLog();
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            clearLog();
+                        }});
+
                 callbacks.printOutput("clear log");
                 }
             });

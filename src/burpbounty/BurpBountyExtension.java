@@ -23,6 +23,7 @@ import sun.nio.cs.ext.MacArabic;
 import java.awt.*;
 import java.io.File;
 import java.io.FileReader;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,6 +59,7 @@ public class BurpBountyExtension implements IBurpExtender, ITab, IScannerCheck,I
     int scanner;
     JsonArray profiles;
     FuzzerDlg dlg;
+    MulFuzzerDlg muldlg;
     private ExecutorService executorService;
     public Tags tagui;
     public CustomHelpers customTools;
@@ -92,7 +94,7 @@ public class BurpBountyExtension implements IBurpExtender, ITab, IScannerCheck,I
 
             callbacks.addSuiteTab(this);
 
-            callbacks.printOutput("- BurpBountyPlus v1.0");
+            callbacks.printOutput("- BurpBountyPlus v2.0");
             callbacks.printOutput("- For bugs please on the official github: https://github.com/wagiro/BurpBounty/");
             callbacks.printOutput("- For bugs please on the official github: https://github.com/ggg4566/BurpBountyPlus");
             callbacks.printOutput("- Created by Eduardo Garcia Melia <wagiro@gmail.com>,flystart <root@flystart.org>");
@@ -257,6 +259,7 @@ public class BurpBountyExtension implements IBurpExtender, ITab, IScannerCheck,I
         JMenu FuzzGetMenu = new JMenu("Fuzz GET Param");
         JMenu FuzzPostMenu = new JMenu("Fuzz POST Param");
         JMenu ComstomFuzzMenu = new JMenu("Insert Fuzz Scan");
+        JMenuItem MultiFuzzMenu = new JMenuItem("Multi Insert Fuzz Scan");
         List<IScannerInsertionPoint> ScanInsertPoint = new ArrayList<IScannerInsertionPoint>();
 
         JsonArray allprofiles = getProfiles();
@@ -276,10 +279,11 @@ public class BurpBountyExtension implements IBurpExtender, ITab, IScannerCheck,I
                     activeprofiles.add(allprofiles.get(i));
                 }
             }
+            /*
             if (activeprofiles.size() == 0) {
                 return null;
             }
-
+            */
         } catch (Exception ex) {
             callbacks.printError("BurpBountyExtension line 286: " + ex.getMessage());
         }
@@ -373,6 +377,56 @@ public class BurpBountyExtension implements IBurpExtender, ITab, IScannerCheck,I
                 }catch (Exception e){
                     callbacks.printError(e.getMessage());
                 }
+            }
+        });
+        MultiFuzzMenu.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent arg0) {
+                ExecutorService executorService = Executors.newSingleThreadExecutor();
+                executorService.submit(new Runnable() {
+                    public void run() {
+                        try {
+                            muldlg = new MulFuzzerDlg(callbacks);
+                        }catch (Exception e){
+                            callbacks.printError(e.getMessage());
+                        }
+
+                        try {
+                            // do something
+                            String key = arg0.getActionCommand();
+                            Map<String, JsonElement>  FuzzProfile =  new HashMap<String,JsonElement>();
+                            JsonArray comstomprilfe =  new JsonArray();
+                            for (int i = 0; i < activeprofiles.size(); i++) {
+                                Object idata = activeprofiles.get(i);
+                                issue = gson.fromJson(idata.toString(), ProfilesProperties.class);
+                                String profile=issue.getName();
+                                FuzzProfile.put(profile,activeprofiles.get(i));
+
+                            }
+                            JsonElement value = FuzzProfile.get(key);
+                            comstomprilfe.add(value);
+                            Tags tag = muldlg.get_dlg_tags();
+                            int[] selectedIndex = invocation.getSelectionBounds();
+                            List<String> targets = new ArrayList<>();
+                            muldlg.setScanParams(burpExt,messages[0],selectedIndex,activeprofiles);
+                            /*
+                            targets.add("https://www.qq.com");
+                            targets.add("http://www.baidu.com");
+                            for(String target : targets) {
+                                //doMultiFuzzerScan(messages[0],selectedIndex,activeprofiles,activeprofiles,tag,muldlg.executor,target);
+                                muldlg.fuzzer_scan(target,activeprofiles);
+                            }
+                            */
+
+                            //doCostomFuzzerScan(messages[0],selectedIndex,activeprofiles,activeprofiles,tag,dlg.executor);
+
+                            //List<IScanIssue> issues = doFuzzerScan(messages[0], Point, allprofiles, comstomprilfe,tag,dlg.executor);
+
+                        }catch (Exception e){
+                            callbacks.printError(e.getMessage());
+                        }
+                    }
+                });
+
             }
         });
         fuzzScan.addActionListener(new ActionListener(){
@@ -754,6 +808,7 @@ public class BurpBountyExtension implements IBurpExtender, ITab, IScannerCheck,I
         MainMenu.add(FuzzGetMenu);
         MainMenu.add(FuzzPostMenu);
         MainMenu.add(ComstomFuzzMenu);
+        MainMenu.add(MultiFuzzMenu);
 
         MainMenu.addSeparator();
         MainMenu.add(stopScan);
@@ -798,9 +853,64 @@ public class BurpBountyExtension implements IBurpExtender, ITab, IScannerCheck,I
         return null;
     }
 
+    public void MuilTargetFuzzScan(List<String> targets,IHttpRequestResponse baseRequestResponse){
+        for(String target : targets)
+        {
+
+        }
+
+    }
+    public void doMultiFuzzerScan(IHttpRequestResponse baseRequestResponse, int[] selectedIndex,JsonArray allprofiles,JsonArray activeprofiles,Tags tag,ThreadPoolExecutor threadpool,String target) {
+        try {
+            URL url = new URL(target);
+            String host = url.getHost();
+            int port = url.getPort();
+
+            String Proto =url.getProtocol();
+            if(port == -1&& Proto.equals("http"))
+            {
+                port = 80;
+            }
+            if(port == -1 && Proto.equals("https"))
+            {
+                port = 443;
+            }
+            IHttpService httpSer = burpExt.helpers.buildHttpService(host,port,Proto);
+            IRequestInfo analyzeRequest = helpers.analyzeRequest(baseRequestResponse);
+            List<String> headers = analyzeRequest.getHeaders();
+            int nCounts = headers.size();
+            for (int i=0;i<nCounts;i++)
+            {
+                String header = headers.get(i);
+                if (header.startsWith("Host:")) {
+                    String newHost = String.format("Host: %s",host);
+                    headers.set(i,newHost);
+                }
+            }
+
+            int bodyOffset = analyzeRequest.getBodyOffset();
+            byte[] byte_Request = baseRequestResponse.getRequest();
+            int len = byte_Request.length;
+            byte[] byte_body = Arrays.copyOfRange(byte_Request, bodyOffset, len);
+            byte[] request = helpers.buildHttpMessage(headers, byte_body);
+            IHttpRequestResponse newRequestResponse= callbacks.makeHttpRequest(httpSer,request);
+            request = newRequestResponse.getRequest();
+
+            CustomInsertFuzz as = new CustomInsertFuzz(this, callbacks, panel.getProfilesFilename(), allprofiles, tag,threadpool);
+            as.runAScan(newRequestResponse, activeprofiles,request,selectedIndex);
+        } catch (Exception ex) {
+            if(ex.getMessage() == null) {
+
+            } else {
+                callbacks.printError("BurpBountyExtension line 800: " + ex.getMessage());
+            }
+        }
+    }
+
     public void doCostomFuzzerScan(IHttpRequestResponse baseRequestResponse, int[] selectedIndex,JsonArray allprofiles,JsonArray activeprofiles,Tags tag,ThreadPoolExecutor threadpool) {
         try {
             byte[] request = baseRequestResponse.getRequest();
+
             CustomInsertFuzz as = new CustomInsertFuzz(this, callbacks, panel.getProfilesFilename(), allprofiles, tag,threadpool);
             as.runAScan(baseRequestResponse, activeprofiles,request,selectedIndex);
         } catch (Exception ex) {

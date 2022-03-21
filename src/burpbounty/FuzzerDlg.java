@@ -25,8 +25,8 @@ public class FuzzerDlg extends JFrame {
     public ThreadPoolExecutor executor;
     private final JTextField filerText = new JTextField(20);
     private final JButton btStop = new JButton("Stop Fuzz");
-    private final JButton btCancel = new JButton("Cancel");
-
+    private final JButton btShowIssue = new JButton("Show Issue");
+    private boolean isShowIssue = true;
 
 
     public FuzzerDlg(IBurpExtenderCallbacks callbacks) {
@@ -34,7 +34,7 @@ public class FuzzerDlg extends JFrame {
         initGUI();
         initEvent();
         initValue();
-        this.setTitle("BurpBountyPlus Fuzzer");
+        this.setTitle("BurpBountyPlus Fuzzer by flystart");
         this.executor = (ThreadPoolExecutor) Executors.newFixedThreadPool(Config.get_threadpool_threadnum());
 
     }
@@ -66,6 +66,10 @@ public class FuzzerDlg extends JFrame {
 
         gbc.gridx = 2;
         gbc.weightx = 0;
+        topPanel.add(btShowIssue, gbc);
+
+        gbc.gridx = 3;
+        gbc.weightx = 0;
         topPanel.add(btStop, gbc);
 
 
@@ -80,17 +84,17 @@ public class FuzzerDlg extends JFrame {
         this.setVisible(true);
         this.add(mainPanel);
         this.addWindowListener(new WindowAdapter() {
-                              @Override
-                              public void windowClosing(WindowEvent e) {
-                                  super.windowClosing(e);
-                                  //do something
-                                  try {
-                                      executor.shutdownNow();
+            @Override
+            public void windowClosing(WindowEvent e) {
+                super.windowClosing(e);
+                //do something
+                try {
+                    executor.shutdownNow();
 
-                                  } catch (Exception ex) {
-                                      callbacks.printError(ex.getMessage());
-                                  }
-                              }});
+                } catch (Exception ex) {
+                    callbacks.printError(ex.getMessage());
+                }
+            }});
 
         //使配置窗口自动适应控件大小，防止部分控件无法显示
         //this.pack();
@@ -107,9 +111,9 @@ public class FuzzerDlg extends JFrame {
         filerText.addKeyListener(new KeyListener() {
             public void keyPressed(KeyEvent e) {
                 if (e.getKeyCode() == KeyEvent.VK_ENTER) {
-                   String value = filerText.getText();
-
-                   tagui.filerTable(value);
+                    String value = filerText.getText();
+                    tagui.setFilterText(value);
+                    tagui.filerTable();
 
                 }
             }
@@ -118,10 +122,22 @@ public class FuzzerDlg extends JFrame {
             public void keyTyped(KeyEvent e) {
             }
         });
-        btCancel.addActionListener(new ActionListener() {
+        btShowIssue.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
                 //FuzzerDlg.this.dispose();
+                if(isShowIssue == true)
+                {
+                    filerText.setText("H");
+                    tagui.setFilterText("H");
+                    tagui.filerTableColor();
+                    isShowIssue = false;
+                }else {
+                    filerText.setText("");
+                    tagui.setFilterText("");
+                    tagui.filerTable();
+                    isShowIssue = true;
+                }
             }
         });
 
@@ -129,7 +145,8 @@ public class FuzzerDlg extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    executor.shutdownNow();
+                    //executor.shutdownNow();
+                    Config.set_run_status(true);
 
                 } catch (Exception ex) {
                     callbacks.printError(ex.getMessage());

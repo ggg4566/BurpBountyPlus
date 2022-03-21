@@ -27,7 +27,9 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.Semaphore;
 import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class Fuzzer{
 
@@ -108,7 +110,7 @@ public class Fuzzer{
         List<Integer> responseCodes = new ArrayList<>(Arrays.asList(300, 301, 303, 302, 307, 308));
         int limitredirect = 30;
         String ParamName = insertionPoint.getInsertionPointName();
-
+        AtomicLong threadNum = new AtomicLong(0);
         for (int i = 0; i < activeprofiles.size(); i++) {
             Object idata = activeprofiles.get(i);
             profile_property = gson.fromJson(idata.toString(), ProfilesProperties.class);
@@ -228,13 +230,18 @@ public class Fuzzer{
 
                 // do somethings
                 byte[] request = new BuildUnencodeRequest(helpers).buildUnencodedRequest(insertionPoint, helpers.stringToBytes(payload), headers, bchost);
+
                 try {
-                    this.executor.submit(new FuzzerThread(callbacks,tagui,request,baseRequestResponse,ParamName,payload,profileName));
+                    if (this.executor.getQueue().size()> 100) {
+                        //String vb = String.format("%d",this.executor.getQueue().size());
+                        //callbacks.printError(vb);
+                        Thread.sleep(1500);
+                    }
+                    this.executor.submit(new FuzzerThread(callbacks,tagui,request,baseRequestResponse,ParamName, payload,profileName));
                 }catch (Exception ex) {
                     callbacks.printError(ex.getMessage());
                     break;
                 }
-
             }
         }
 

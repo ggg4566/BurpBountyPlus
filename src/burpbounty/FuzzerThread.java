@@ -2,6 +2,7 @@ package burpbounty;
 import burp.*;
 
 import java.awt.*;
+import java.net.ConnectException;
 
 public class FuzzerThread implements Runnable {
 
@@ -47,7 +48,8 @@ public class FuzzerThread implements Runnable {
                     this.tagui.setRowColor();
                     isLight = false;
                 }
-            } catch (Exception ex) {
+            }
+            catch (Exception ex) {
                 callbacks.printError(ex.getMessage());
             }
         }
